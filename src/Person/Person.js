@@ -2,7 +2,6 @@ import React from 'react';
 import './Person.css';
 
 const Person = ({
-    key,
     name,
     age,
     click,
