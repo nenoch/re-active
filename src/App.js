@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
-import logo from './logo.svg';
-import Person from './Person/Person';
-import UserInput from './UserInput/UserInput';
-import UserOutput from './UserOutput/UserOutput';
+import Person from './components/Person/Person';
+import UserInput from './components/UserInput/UserInput';
+import UserOutput from './components/UserOutput/UserOutput';
+import Header from './components/Header/Header';
+import Auth from './components/Auth/Auth';
+import { AuthContext } from './context';
+
 import './App.css';
 
 const App = () => {
@@ -27,6 +30,8 @@ const App = () => {
   }
 
   const [newUserState, setNewUserState] = useState(defaultUser);
+  const [pageState, setPageState] = useState('auth');
+  const [authStatus, setAuthStatus] = useState(false);
 
   const newNameHandler = (event, id) => {
     const updatedList = personsState.persons.map(p => p.id === id ? { ...p, name: event.target.value } : p);
@@ -62,40 +67,61 @@ const App = () => {
     setNewUserState(defaultUser)
   }
 
+  const switchComponent = (compName) => {
+    setPageState(compName);
+  }
+
+  const login = () => {
+    setAuthStatus(true);
+  }
+
   // Multiple, separated State slices
   console.log('personsState', personsState);
   console.log('newUserState', newUserState);
+  console.log('pageState', pageState);
+
+  const usersList = () => {
+    return personsState.persons.map(person =>
+      <Person
+        key={person.id}
+        name={person.name}
+        age={person.age}
+        // the arrow function can be inefficient re-rendering too often
+        change={(e) => newNameHandler(e, person.id)}
+      >
+        and I love yoga
+    </Person>
+    )
+  }
 
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <h1 className="App-title">This is working!</h1>
-      </header>
-      <div className="App-intro">
-        {personsState.persons.map(person =>
-          <Person
-            key={person.id}
-            name={person.name}
-            age={person.age}
-            // the arrow function can be inefficient re-rendering too often
-            change={(e) => newNameHandler(e, person.id)}
-          >
-            and I love yoga
-          </Person>
-        )}
-        <UserInput
-          nameHandler={userNameHandler}
-          name={newUserState.name}
-          ageHandler={userAgeHandler}
-          age={newUserState.age}
+      <AuthContext.Provider
+        value={{
+          status: authStatus,
+          login: login
+        }}>
+        <Header
+          onLoadUsers={() => switchComponent('users')}
+          onLoadAuth={() => switchComponent('auth')}
         />
-        <UserOutput
-          click={addUser}
-          name={newUserState.name}
-          age={newUserState.age}
-        />
-      </div>
+        <div className="App-intro">
+          {pageState === 'users' ?
+            usersList() : <Auth />
+          }
+          <UserInput
+            nameHandler={userNameHandler}
+            name={newUserState.name}
+            ageHandler={userAgeHandler}
+            age={newUserState.age}
+          />
+          <UserOutput
+            click={addUser}
+            name={newUserState.name}
+            age={newUserState.age}
+          />
+        </div>
+      </AuthContext.Provider>
     </div>
   );
 }
