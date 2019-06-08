@@ -4,6 +4,7 @@ import UserInput from './components/UserInput/UserInput';
 import UserOutput from './components/UserOutput/UserOutput';
 import Header from './components/Header/Header';
 import Auth from './components/Auth/Auth';
+import TextField from './components/TextField/TextField';
 import { AuthContext } from './context';
 
 import './App.css';
@@ -109,6 +110,7 @@ const App = () => {
           {pageState === 'users' ?
             usersList() : <Auth />
           }
+          <TextField />
           <UserInput
             nameHandler={userNameHandler}
             name={newUserState.name}
