@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
-import Person from './components/Person/Person';
+import React, { useState, useMemo } from 'react';
 import UserInput from './components/UserInput/UserInput';
 import UserOutput from './components/UserOutput/UserOutput';
 import Header from './components/Header/Header';
 import Auth from './components/Auth/Auth';
+import List from './components/PersonsList/List';
 import TextField from './components/TextField/TextField';
 import { AuthContext } from './context';
 
@@ -49,10 +49,10 @@ const App = () => {
     })
   }
 
-  const userNameHandler = (event) => {
+  const userNameHandler = (ref) => {
     setNewUserState({
       ...newUserState,
-      name: event.target.value
+      name: ref
     })
   }
 
@@ -81,20 +81,6 @@ const App = () => {
   console.log('newUserState', newUserState);
   console.log('pageState', pageState);
 
-  const usersList = () => {
-    return personsState.persons.map(person =>
-      <Person
-        key={person.id}
-        name={person.name}
-        age={person.age}
-        // the arrow function can be inefficient re-rendering too often
-        change={(e) => newNameHandler(e, person.id)}
-      >
-        and I love yoga
-    </Person>
-    )
-  }
-
   return (
     <div className="App">
       <AuthContext.Provider
@@ -107,8 +93,12 @@ const App = () => {
           onLoadAuth={() => switchComponent('auth')}
         />
         <div className="App-intro">
-          {pageState === 'users' ?
-            usersList() : <Auth />
+          {/* {pageState === 'users' ? */}
+            {useMemo(
+              () => (
+            <List persons={personsState.persons} nameHandler={newNameHandler}/>), [personsState.persons]
+            )}
+          {/* : <Auth /> */}
           }
           <TextField />
           <UserInput

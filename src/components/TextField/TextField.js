@@ -1,15 +1,15 @@
 import React from 'react';
 import './TextField.css';
-const { useRef, useLayoutEffect } = React;
+const { useRef, useLayoutEffect, useState } = React;
 
 const TextField = () => {
 
-    // Step 1: Create ref object for input group container.
+    // Create ref object for input group container.
     // and input field
     const inputGroupRef = useRef();
     const inputRef = useRef();
   
-    // Step 2: Add useLayoutEffect and pass an empty array
+    // Add useLayoutEffect and pass an empty array
     // for it to execute only on componentDidMount lifecycle
     useLayoutEffect(() => {
       const { current  } = inputRef;
@@ -17,7 +17,7 @@ const TextField = () => {
       console.log('inputRef', inputRef);
       console.log('inputGroupRef', inputGroupRef);
   
-      // Step 3: Create functions to handle on focus and on blur
+      // Create functions to handle on focus and on blur
       // event listeners.
       const handleFocus = () => inputGroupRef.current.classList.add('active');
       const handleBlur = () => {
@@ -26,7 +26,7 @@ const TextField = () => {
         }
       };
   
-      // Step 4: Add event listeners for focus and blur.
+      // Add event listeners for focus and blur.
       current.addEventListener('focus', handleFocus);
       current.addEventListener('blur', handleBlur);
   
@@ -37,7 +37,11 @@ const TextField = () => {
         current.removeEventListener('blur', handleBlur);
       }
     }, [])
-  
+
+    const [ isInputValid, setIsInputValid ] = useState(false);
+    const inputValidation = event => {
+      !event.target.value.length ? setIsInputValid(false) : setIsInputValid(true);
+    }
   
     return (
       <div className='container'>
@@ -46,6 +50,10 @@ const TextField = () => {
             Your name
           </label>
           <input
+            style = {
+              { backgroundColor: isInputValid ? 'red' : 'transparent'}
+            }
+            onChange={inputValidation}
             ref={inputRef}
             className='input'
             type='text'
